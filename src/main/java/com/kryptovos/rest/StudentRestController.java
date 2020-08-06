@@ -1,10 +1,9 @@
 package com.kryptovos.rest;
 
 import com.kryptovos.entity.Student;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -23,6 +22,18 @@ public class StudentRestController {
         theStudents.add(new Student("Jason", "Dough"));
     }
 
+    @ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException(StudentNotFoundException e) {
+
+        StudentErrorResponse errorResponse = new StudentErrorResponse();
+
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setTimeStamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
     // Define endpoint for all students
     @GetMapping("/students")
     public List<Student> getStudents() {
@@ -32,6 +43,12 @@ public class StudentRestController {
     // Define endpoint for students based on ID
     @GetMapping("/students/{studentId}")
     public Student getStudent(@PathVariable int studentId) {
+
+        // Check student ID against list size
+        if (studentId >= theStudents.size() || studentId < 0) {
+            throw new StudentNotFoundException("Student not found - ID: " + studentId);
+        }
+
         return theStudents.get(studentId);
     }
 }

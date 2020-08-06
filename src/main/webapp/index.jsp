@@ -10,6 +10,8 @@
 <a href="${pageContext.request.contextPath}/test/hello">Test API-endpoint with absolute path</a>
 <hr>
 <a href="${pageContext.request.contextPath}/api/students">API-endpoint for all students</a>
+<br>
+<a href="${pageContext.request.contextPath}/api/students/0">API-endpoint for specific student</a>
 
 </body>
 </html>
